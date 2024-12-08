@@ -29,8 +29,9 @@
 5. 点击右上角的`安装`按钮
 6. 找到并选择下载的`transparent_image_to_mesh.py`文件
 7. 在插件列表中找到"透明图片转模型"，并勾选启用
-8. 安装所需的Python依赖：   ```bash
-   path/to/blender/python.exe -m pip install numpy pillow opencv-python   ```
+8. 插件会自动尝试安装所需的Python依赖
+
+如果自动安装失败，您可以手动安装依赖：
 
 ## 使用方法
 

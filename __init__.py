@@ -8,11 +8,64 @@ bl_info = {
     "category": "Import-Export",
 }
 
-# 检查必要的依赖
-try:
+import bpy
+import subprocess
+import sys
+import os
+
+def install_pip():
+    """安装pip"""
+    try:
+        subprocess.check_call([sys.executable, "-m", "ensurepip"])
+        return True
+    except:
+        return False
+
+def install_package(package_name):
+    """安装指定的包"""
+    try:
+        subprocess.check_call([sys.executable, "-m", "pip", "install", package_name])
+        return True
+    except:
+        return False
+
+def ensure_dependencies():
+    """确保所有依赖都已安装"""
+    required_packages = ["numpy", "pillow", "opencv-python"]
+    missing_packages = []
+    
+    # 检查每个包是否已安装
+    for package in required_packages:
+        try:
+            __import__(package.replace("-", "_"))
+        except ImportError:
+            missing_packages.append(package)
+    
+    if missing_packages:
+        # 确保pip已安装
+        if not install_pip():
+            raise ImportError(
+                "\n无法安装pip。请手动安装以下Python包："
+                f"\n{', '.join(missing_packages)}"
+            )
+        
+        # 安装缺失的包
+        for package in missing_packages:
+            if not install_package(package):
+                raise ImportError(
+                    f"\n无法安装{package}。请手动安装以下Python包："
+                    f"\n{', '.join(missing_packages)}"
+                )
+    
+    # 现在可以安全地导入所需的包
+    global np, Image, cv2
     import numpy as np
     from PIL import Image
     import cv2
+
+# 尝试安装和导入依赖
+try:
+    ensure_dependencies()
 except ImportError as e:
     raise ImportError(
         "\n必须安装以下Python包才能使用此插件："
@@ -230,7 +283,7 @@ class CropTransparentOperator(Operator):
         return self.execute(context)
 
     def execute(self, context):
-        # 更新场景设置
+        # 更新场景���置
         context.scene.transparent_threshold = self.threshold
         context.scene.crop_precision = self.precision
         
